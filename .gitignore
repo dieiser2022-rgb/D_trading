@@ -1,0 +1,15 @@
+# Dados locais e informações privadas
+data/
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+*.env
+.env.*
+config.local.json
+__pycache__/
+*.pyc
+.DS_Store
+.vscode/
+.idea/
+*.log
