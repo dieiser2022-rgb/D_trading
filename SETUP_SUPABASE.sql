@@ -2,7 +2,7 @@
 -- For your own project only. Do NOT paste the database service_role key into the app.
 
 create table if not exists public.dtrading_sync (
-  user_id uuid not null default (select auth.uid()) references auth.users(id) on delete cascade,
+  user_id uuid not null default auth.uid() references auth.users(id) on delete cascade,
   kind text not null check (kind in ('account','strategy','settings','book','session','trade')),
   record_id uuid not null,
   data jsonb not null default '{}'::jsonb,
