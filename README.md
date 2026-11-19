@@ -1,27 +1,33 @@
-# D_Trading — Diário de Trade (v1.2)
+# D_Trading v1.3 — TradeClub Verde
 
-Diário de trade para Windows, com **funcionamento local/offline** e **sincronização opcional pela internet via Supabase**.
+Diário de trade para Windows com banco local SQLite, funcionamento offline e sincronização opcional via Supabase.
 
-## Iniciar no Windows
-1. Instale Python 3.9+ (com Python no PATH).
-2. Baixe o repositório com **Code > Download ZIP** e extraia a pasta.
-3. Execute `INICIAR_DIARIO.bat`.
-4. Acesse o endereço local indicado na janela (normalmente `http://127.0.0.1:8765`).
+## Três temas selecionáveis
 
-Não é necessário instalar frameworks Python externos.
+Em **Configurações → Aparência → Templates Visuais**:
 
-## Sincronizar casa e escritório
-Abra `SINCRONIZACAO_CASA_ESCRITORIO.md` e siga as instruções do arquivo `SETUP_SUPABASE.sql`. O app continua operando offline e sincroniza ao restabelecer a conexão quando estiver configurado.
+- **Clássico** — tema original.
+- **Trader Pro** — preto fosco e vermelho.
+- **TradeClub Verde** — preto fosco e verde neon, Feed com cards grandes, filtros e painel lateral de desempenho.
 
-## Seus dados
-**Operações, banco SQLite, PDFs e prints são privados e ficam em `data/`, que deve permanecer fora do GitHub.** Faça backup pelo aplicativo antes de qualquer atualização. Nunca publique senhas, tokens, arquivos `.env`, backups ou pastas `data`.
+Todos os temas utilizam os **mesmos registros reais**. A escolha é salva nas preferências do diário.
 
-## Importante
-GitHub **hospeda e versiona este código**; por si só, não sincroniza operações. Esta versão não funciona diretamente em GitHub Pages, pois o programa usa um servidor Python local. A autenticação e a sincronização são implementadas via Supabase.
+### Feed verde
+- Busca por ativo, estratégia e anotações (`Ctrl+K`).
+- Filtros Todas, Wins e Losses e período (7, 30, 90 dias, todos).
+- Cards com ativo, estratégia, direção, data, horário, print e resultado; clique no card para detalhes e no print para o Modo de Estudo.
+- Painéis de performance, operações recentes e estratégias ordenadas por resultado.
+- Seleção múltipla e exclusão com confirmação.
+- Sem feeds sociais, rankings de outros membros ou preços ao vivo fictícios. Dados exibidos provêm do seu diário.
 
-Consulte `LEIA_PRIMEIRO.md` para todas as funcionalidades e limitações.
+## Atualização sem perder as operações
+1. Faça um **backup completo** no D_Trading atual.
+2. Feche o aplicativo e a janela do Python.
+3. Se já usa a v1.2, copie **somente** `web/index.html`, `web/tradeclub_green.js`, `web/tradeclub_green.css` desta versão para a pasta `web` da instalação anterior.
+4. Se usa uma versão mais antiga, copie os arquivos do programa sem excluir nem substituir a pasta `data/`. Antes de atualizar, consulte `LEIA_PRIMEIRO.md`.
+5. Reabra `INICIAR_DIARIO.bat` e use `Ctrl+F5` no navegador.
 
-## Template Trader Pro (novo)
-Na aba **Configurações → Aparência → Templates Visuais**, escolha **Trader Pro** para ativar o layout preto e vermelho com painel lateral de métricas e Feed com cards ampliados, filtros Todas/Wins/Losses e seleção de trades. Volte a **Clássico** quando quiser. Todas as métricas usam os registros reais do diário, sem números demonstrativos.
+**Nunca publique** `data/`, bancos SQLite, fotos de trades, PDFs ou credenciais no repositório GitHub. O Supabase sincroniza os dados, mas não atualiza o código do aplicativo: instale o tema em cada computador.
 
-**Para atualizar preservando os dados:** feche o programa, faça backup pelo D_Trading, copie os arquivos atualizados (especialmente `web/index.html`, `web/trader_pro.js` e `web/trader_pro.css`) para a instalação e **não apague nem sobrescreva a pasta `data/`**. Atualize ambos os PCs: o Supabase sincroniza os dados, não o código do aplicativo.
+### Observação sobre valores
+O resumo exibe valores financeiros gravados no diário. Contas em moedas diferentes não são convertidas automaticamente; considere isso ao comparar resultados totais.
