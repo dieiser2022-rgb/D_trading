@@ -1,0 +1,21 @@
+{
+  "name": "D_Trading Mobile",
+  "short_name": "D_Trading",
+  "description": "Diário de trade para iPhone conectado ao D_Trading Windows via Supabase",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#061811",
+  "theme_color": "#061811",
+  "orientation": "portrait",
+  "lang": "pt-BR",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
