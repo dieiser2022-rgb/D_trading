@@ -1,4 +1,4 @@
-# D_Trading — Diário de Trade (v1.1)
+# D_Trading — Diário de Trade (v1.2)
 
 Diário de trade para Windows, com **funcionamento local/offline** e **sincronização opcional pela internet via Supabase**.
 
@@ -20,3 +20,8 @@ Abra `SINCRONIZACAO_CASA_ESCRITORIO.md` e siga as instruções do arquivo `SETUP
 GitHub **hospeda e versiona este código**; por si só, não sincroniza operações. Esta versão não funciona diretamente em GitHub Pages, pois o programa usa um servidor Python local. A autenticação e a sincronização são implementadas via Supabase.
 
 Consulte `LEIA_PRIMEIRO.md` para todas as funcionalidades e limitações.
+
+## Template Trader Pro (novo)
+Na aba **Configurações → Aparência → Templates Visuais**, escolha **Trader Pro** para ativar o layout preto e vermelho com painel lateral de métricas e Feed com cards ampliados, filtros Todas/Wins/Losses e seleção de trades. Volte a **Clássico** quando quiser. Todas as métricas usam os registros reais do diário, sem números demonstrativos.
+
+**Para atualizar preservando os dados:** feche o programa, faça backup pelo D_Trading, copie os arquivos atualizados (especialmente `web/index.html`, `web/trader_pro.js` e `web/trader_pro.css`) para a instalação e **não apague nem sobrescreva a pasta `data/`**. Atualize ambos os PCs: o Supabase sincroniza os dados, não o código do aplicativo.
