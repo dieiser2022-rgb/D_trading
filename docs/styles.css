@@ -11,3 +11,105 @@ form{margin:0}.field{display:flex;flex-direction:column;gap:7px;margin-bottom:13
 .signin-title{margin-bottom:5px}.signin{margin-top:27px}.signin .logo-row{font-size:36px;margin-bottom:14px}.spinner{width:30px;height:30px;border:3px solid #244c37;border-top-color:#0cdb81;border-radius:50%;animation:spin .8s linear infinite;margin:auto}@keyframes spin{to{transform:rotate(360deg)}}.initial{text-align:center;margin:60px 0}.initial p{color:#adc7b6}
 .toast{position:fixed;left:50%;bottom:calc(87px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);opacity:0;pointer-events:none;transition:all .2s;background:#0a4c30;color:#e4fff0;box-shadow:0 7px 22px #0009;border:1px solid #25b270;border-radius:12px;padding:11px 15px;font-size:12px;z-index:99;max-width:90%;width:max-content;text-align:center}.toast.show{transform:translateX(-50%) translateY(0);opacity:1}.footer-note{color:#789c85;font-size:11px;line-height:1.4;margin-top:13px}
 @media(min-width:650px){main{padding:28px 28px 40px}.stat-grid{grid-template-columns:repeat(4,1fr)}.topbar{padding-left:28px;padding-right:28px}}
+
+/* D_Trading Mobile • Trader Pro Vermelho (inspirado no tema Windows) */
+:root{background:#090a0e;color:#f4f4f6}
+body{background:#090a0e}
+a{color:#ff5b6b}
+input,select,textarea{outline-color:#eb2439}
+button:focus-visible,a:focus-visible{outline:2px solid #ff4057}
+.app{background:radial-gradient(ellipse 360px 230px at 85% 0%,#410c19 0%,transparent 72%),#0b0b10;max-width:850px}
+.topbar{background:radial-gradient(220px 90px at 12% 0%,#5f1022 0%,transparent 75%),rgba(11,11,16,.97);border-bottom:1px solid #303039;position:sticky}
+.topbar::after{content:"";position:absolute;left:22%;top:0;height:4px;width:20%;pointer-events:none;background:linear-gradient(110deg,#ee1c34,#520c1a,transparent);transform:skewX(-32deg)}
+.brandmark{background:linear-gradient(145deg,#f03248,#920d22);color:#fff;box-shadow:0 2px 15px #9d16264d;border:1px solid #f14054}
+.brand small{color:#bcb8bd}
+.net{background:#122c1f;color:#24e58e}
+.net.offline{background:#403022;color:#ffc66d}
+.icon-button{background:#1d1a21;border:1px solid #4f333b;color:#fff}
+.hint,.muted{color:#aaa9b4}
+.green{color:#0ee38b}.red{color:#ff475b}.orange{color:#ffb95d}
+.panel,.trade,.stats-box{background:linear-gradient(145deg,#191a21,#111217);border:1px solid #36363f;box-shadow:0 8px 28px #0006}
+.stats-box{border-color:#3d2631}
+.stat{background:#14151b;border-color:#34343e}
+.stat label,.stat .foot{color:#adaeb9}
+.pill{background:#142e20;color:#24df88}
+.pill.gray{background:#303039;color:#eee}
+.pill.loss{background:#4e1522;color:#ffa6b0}
+.pill.buy{background:#153a27;color:#39eb9d}
+.trade{border:1px solid #962031;background:linear-gradient(128deg,#1e171d,#111216)}
+.trade:active{border-color:#ff354b}
+.trade .meta{color:#b9b8c3}
+.trade .summary{background:#121318;border-color:#39333b}
+.trade .desc{color:#bdbbc4}
+.filters button{background:#14141a;border-color:#55212e;color:#ded9df}
+.filters button.active{background:linear-gradient(120deg,#980c20,#e91d36);border-color:#ff3b52;color:#fff;box-shadow:0 0 14px #b40c3144}
+.filters button.wins{border-color:#136b43;color:#28e88b}
+.filters button.wins.active{background:#0d633a;color:#fff;border-color:#20d976}
+.filters button.losses{border-color:#982439;color:#ff6977}
+.filters button.losses.active{background:#9d1427;color:#fff;border-color:#f8485f}
+.search input,.field input,.field textarea,.field select{background:#13141a;border-color:#3b3b45;color:#fff}
+.field label{color:#dddce3}
+.field input::placeholder,.field textarea::placeholder,.search input::placeholder{color:#8c8c98}
+.field select option{background:#14151b}
+.button{background:linear-gradient(125deg,#b61026,#eb1a36);color:#fff;border:1px solid #ef3048;box-shadow:0 3px 16px #8b0f2040}
+.button.secondary{background:#1c1b22;color:#eee;border-color:#45434f;box-shadow:none}
+.button.danger{background:#49131d;color:#ffd5dc;border-color:#953444}
+.notice{background:#332916;border-color:#675127;color:#ffe5ac}
+.goodnotice{background:#102d20;border-color:#167546;color:#adffd1}
+.badnotice{background:#3c1921;border-color:#923748;color:#ffbac4}
+.sep{border-top-color:#36343e}
+.info-line{border-bottom-color:#34313a;color:#bdbac5}
+.info-line strong{color:#fff}
+.tagline{color:#aaa6b1}
+.file-preview{border-color:#843345}
+.bottomnav{background:rgba(12,12,16,.985);border-top:1px solid #3f2932;box-shadow:0 -6px 25px #000a}
+.bottomnav button{color:#aaa9b5}
+.bottomnav button.active{color:#fff}
+.bottomnav button.active .navico{display:grid;place-items:center;background:linear-gradient(135deg,#9d0b20,#e82038);border:1px solid #fa4155;border-radius:9px;min-width:36px;min-height:34px;box-shadow:0 2px 13px #b4133266}
+.spinner{border-color:#66323e;border-top-color:#ee2840}
+.initial p{color:#c3bec7}
+.toast{background:#3b1420;border-color:#9d263a;color:#fff}
+.footer-note{color:#94909c}
+.chart{background:transparent}
+.red-overview{background:linear-gradient(135deg,#1b1b22,#121216);border:1px solid #39343e;border-radius:13px;padding:14px;margin:0 0 21px;box-shadow:0 6px 22px #0005}
+.red-overview-title{display:flex;align-items:center;justify-content:space-between;gap:9px}
+.red-overview-title h2{font-size:15px;margin:0;color:#fff}
+.red-overview-title h2 span{color:#fa2b46;font-size:21px;vertical-align:-2px;margin-right:6px}
+.red-overview-title small{font-size:10px;color:#c5c1cb;background:#24242d;border:1px solid #46404b;padding:6px 8px;border-radius:8px}
+.red-overview-sub{font-size:11px;color:#aaa7b3;margin:7px 0 10px}
+.red-overview-rule{border-top:1px solid #3a353e;margin:12px 0}
+.red-net{font-size:30px;font-weight:850;letter-spacing:-1px}
+.red-mini-chart{display:block;width:100%;height:72px;margin:8px 0 12px}
+.red-empty-chart{height:72px;display:grid;place-items:center;color:#7f7b87;border-bottom:1px solid #322e37;font-size:11px}
+.red-quad{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.red-quad>div{background:#121318;border:1px solid #34343d;border-radius:8px;padding:10px 4px;text-align:center;min-width:0}
+.red-quad small{display:block;color:#aba8b3;font-size:10px}
+.red-quad strong{display:block;font-size:18px;margin-top:5px}
+.red-feed-header h1{font-size:25px}
+.red-feed-header h1 span{color:#f52b47}
+.red-feed-header .hint{margin:4px 0 14px}
+.red-trade-card{padding:12px 13px;border-color:#8b1c2c;margin-bottom:12px}
+.red-trade-card .trade-heading{display:flex;align-items:center;gap:8px;min-width:0}
+.red-asset-symbol{flex:0 0 30px;display:grid;place-items:center;background:#38251e;color:#ffca5c;border:1px solid #5b3530;border-radius:8px;width:30px;height:30px;font-size:19px}
+.red-trade-card .trade-head{align-items:center}
+.red-trade-card .symbol{font-size:18px;color:#faf9fc}
+.red-trade-card .labels{margin-top:4px}
+.red-trade-card .trade-result{display:flex;flex-direction:column;align-items:flex-end;gap:5px}
+.red-trade-card .pnl.medium{font-size:19px}
+.red-result-pill{border-radius:100px;font-size:11px;font-weight:750;padding:4px 9px;background:#33323a;border:1px solid #4c4953;color:#ddd}
+.red-result-pill.is-win{background:#0b3b22;color:#18f38b;border-color:#136e43}
+.red-result-pill.is-loss{background:#481723;color:#ff7280;border-color:#98283c}
+.red-trade-card .meta{font-size:11px;gap:8px;margin-bottom:9px}
+.red-chart-slot{min-height:84px;display:flex;justify-content:center;align-items:center;gap:11px;padding:14px;background:linear-gradient(125deg,#060709,#14151a);border:1px solid #37343c;border-radius:9px;color:#aca8b5}
+.red-chart-ico{font-size:30px;color:#c92b42}
+.red-chart-slot span:last-child{display:flex;flex-direction:column;font-size:12px}
+.red-chart-slot small{color:#777783;margin-top:4px;font-size:10px}
+.red-facts{margin-top:11px}
+.red-facts>div{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:7px 2px;border-bottom:1px solid #333139;font-size:12px}
+.red-facts span{color:#bab7c1}
+.red-facts b{color:#eee;max-width:60%;text-align:right;overflow-wrap:anywhere}
+.red-facts b.green{color:#11e38c}.red-facts b.red{color:#ff6470}
+.red-open{text-align:right;font-size:11px;color:#f88390;margin-top:10px;font-weight:750}
+.red-open span{font-size:18px;vertical-align:-2px}
+@media(min-width:650px){.red-feed-page{max-width:790px;margin:auto}.red-quad strong{font-size:20px}}
+@media(max-width:390px){.red-trade-card .pnl.medium{font-size:16px}.red-quad strong{font-size:16px}.red-overview{padding:11px}.red-trade-card .trade-heading{gap:5px}.red-trade-card .symbol{font-size:16px}}
