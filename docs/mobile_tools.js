@@ -168,7 +168,7 @@ async function makeShareCards(t,img){
  let parts=[];
  const add=(height,draw)=>parts.push({height,draw});
  add(125,(c,y)=>{c.fillStyle='#fb304d';c.font='bold 54px system-ui';c.fillText('D_TRADING',margin,y+52);c.fillStyle='#d9d6df';c.font='23px system-ui';c.fillText('RELATÓRIO DE OPERAÇÃO • '+(t.asset||'TRADE'),margin,y+90);});
- add(70,(c,y)=>{c.fillStyle='#fff';c.font='bold 43px system-ui';c.fillText(money(net(t)),margin,y+48);});
+ if(hasRecorded(t.pnl))add(70,(c,y)=>{c.fillStyle='#fff';c.font='bold 43px system-ui';c.fillText(money(net(t)),margin,y+48);});
  if(img){
   const maxWidth=width-margin*2, maxH=680;
   const ratio=img.naturalWidth/img.naturalHeight;
@@ -207,7 +207,7 @@ function shareView(){
  const r=lookup(shareId);
  if(!r||!r.data?.payload)return `<div class="notice badnotice">Esta operação não está mais disponível.</div><button class="button secondary" data-tool-action="shareBack">← Voltar</button>`;
  const t=attachedTrade(r);
- return `<section class="mobile-share"><button class="button secondary" data-tool-action="shareBack">← Voltar</button><h1 style="margin-top:15px">Compartilhar Operação</h1><p class="hint">Envie o print e os detalhes completos pelo WhatsApp, Mail ou outro app instalado no iPhone.</p><div class="panel"><h2>${esc(t.asset||'Operação')} • ${esc(formatDate(t.date))}</h2><p class="tagline">Resultado: <strong class="${sign(net(t))}">${esc(money(net(t)))}</strong> · ${esc(t.direction||'—')} · ${esc(t.strategy||'Sem estratégia')}</p><p class="tagline">${t.images?.length?'Incluindo o primeiro print da operação na imagem compartilhada.':'Sem print vinculado. O cartão terá todas as especificações do registro.'}</p></div>${shareBusy?'<div class="panel"><div class="spinner"></div><p class="tagline">Preparando imagens com o print e todos os dados...</p></div>':shareError?`<div class="notice badnotice">${esc(shareError)}</div><button class="button secondary" data-tool-action="retryShare">↻ Tentar preparar novamente</button>`:shareFiles.length?`<div class="panel"><h2>Arquivo preparado</h2><p class="tagline">${shareFiles.length} imagem(ns) com dados da operação, prontas para envio.</p>${shareLinks[0]?`<img class="file-preview" src="${shareLinks[0]}" alt="Prévia da operação para compartilhar">`:''}</div><button class="button" style="width:100%;margin-bottom:10px" data-tool-action="nativeShare">↗ Compartilhar via WhatsApp / E-mail</button><button class="button secondary" style="width:100%;margin-bottom:10px" data-tool-action="downloadShare">Salvar imagem no iPhone</button><p class="mob-helper">Use o botão Compartilhar para abrir a lista de aplicativos do iPhone. Se o navegador não permitir anexos, salve a imagem e anexe manualmente na conversa ou no e-mail.</p>`:'<p class="hint">Iniciando preparo...</p>'}</section>`;
+ return `<section class="mobile-share"><button class="button secondary" data-tool-action="shareBack">← Voltar</button><h1 style="margin-top:15px">Compartilhar Operação</h1><p class="hint">Envie o print e os detalhes completos pelo WhatsApp, Mail ou outro app instalado no iPhone.</p><div class="panel"><h2>${esc(t.asset||'Operação')} • ${esc(formatDate(t.date))}</h2><p class="tagline">${[hasRecorded(t.pnl)?'Resultado: '+money(net(t)):null,hasRecorded(t.direction)?t.direction:null,hasRecorded(t.strategy)?t.strategy:null].filter(Boolean).map(esc).join(' · ')}</p><p class="tagline">${t.images?.length?'Incluindo o primeiro print da operação na imagem compartilhada.':'Sem print vinculado. O cartão terá todas as especificações do registro.'}</p></div>${shareBusy?'<div class="panel"><div class="spinner"></div><p class="tagline">Preparando imagens com o print e todos os dados...</p></div>':shareError?`<div class="notice badnotice">${esc(shareError)}</div><button class="button secondary" data-tool-action="retryShare">↻ Tentar preparar novamente</button>`:shareFiles.length?`<div class="panel"><h2>Arquivo preparado</h2><p class="tagline">${shareFiles.length} imagem(ns) com dados da operação, prontas para envio.</p>${shareLinks[0]?`<img class="file-preview" src="${shareLinks[0]}" alt="Prévia da operação para compartilhar">`:''}</div><button class="button" style="width:100%;margin-bottom:10px" data-tool-action="nativeShare">↗ Compartilhar via WhatsApp / E-mail</button><button class="button secondary" style="width:100%;margin-bottom:10px" data-tool-action="downloadShare">Salvar imagem no iPhone</button><p class="mob-helper">Use o botão Compartilhar para abrir a lista de aplicativos do iPhone. Se o navegador não permitir anexos, salve a imagem e anexe manualmente na conversa ou no e-mail.</p>`:'<p class="hint">Iniciando preparo...</p>'}</section>`;
 }
 async function prepareShare(){
  const record=lookup(shareId);if(!record?.data?.payload)throw Error('Operação não encontrada');
@@ -264,12 +264,18 @@ function downloadShares(){
 }
 function csvReport(){
  const list=reportTrades();
- const cols=['Data','Hora','Ativo','Direção','Mercado','Estratégia','Conta','Resultado Bruto','Taxas','Resultado Líquido','Risco','R/R'];
- const rows=list.map(t=>[t.date,t.start,t.asset,t.direction,t.market,t.strategy,accountName(t),t.pnl,t.fees,net(t),t.risk,t.rr]);
- const csv='\ufeff'+[cols,...rows].map(row=>row.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(';')).join('\r\n');
- const link=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
- const a=document.createElement('a');a.href=link;a.download=`D_Trading_Relatorio_${reportFrom||'todos'}_${reportTo||'atual'}.csv`;document.body.appendChild(a);a.click();a.remove();
- setTimeout(()=>URL.revokeObjectURL(link),60000);
+ const header=['Operação','Seção','Campo','Valor'];
+ const rows=[];
+ for(let i=0;i<list.length;i++){
+  for(const group of cardSections(list[i])){
+   for(const [label,value] of group.entries)rows.push([i+1,group.section,label,value]);
+  }
+ }
+ const csv='\ufeff'+[header,...rows].map(row=>row.map(v=>'"'+String(v??'').replace(/"/g,'""')+'"').join(';')).join('\r\n');
+ const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+ const a=document.createElement('a');a.href=url;a.download=`D_Trading_Relatorio_${reportFrom||'todos'}_${reportTo||'atual'}.csv`;
+ document.body.appendChild(a);a.click();a.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),60000);
 }
 render=function enhancedMobileRender(){
  if(S.view==='report'||S.view==='share'){
