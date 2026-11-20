@@ -1,0 +1,51 @@
+
+/* Ferramentas do D_Trading Mobile: ações, relatórios, impressão e compartilhamento */
+.mobile-tools-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:0 0 13px}
+.mobile-tools-actions>.button{min-height:44px;padding:9px 4px;font-size:12px;white-space:nowrap}
+.mobile-tools-actions .danger{background:#551522;color:#ffc5cc;border:1px solid #ab384b}
+.mobile-feed-share{border-top:1px solid #402b34;margin-top:13px;padding-top:10px;display:flex;justify-content:flex-end}
+.mobile-feed-share button{background:#29161d;color:#ffb9c5;border:1px solid #863046;border-radius:9px;padding:8px 12px;min-height:38px;font-size:12px;font-weight:700}
+.mobile-feed-share button:active{background:#8c182c}
+.mobile-report-entry{display:flex;justify-content:flex-end;margin:0 0 14px}
+.mobile-report-entry .button{font-size:12px}
+.mobile-report-controls{padding-bottom:14px;margin-bottom:16px;border-bottom:1px solid #433640}
+.mobile-report-controls h1{font-size:24px;margin:14px 0 2px}
+.mobile-report-presets{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:13px}
+.mobile-report-presets button{background:#19171e;color:#eee;border:1px solid #563c46;border-radius:9px;padding:9px 10px;min-height:40px;font-size:11px}
+.mobile-report-presets button:hover{border-color:#ff425d}
+.mobile-report-buttons{display:flex;gap:8px}
+.mobile-report-buttons .button{flex:1;min-width:0;padding:10px 6px;font-size:12px}
+.report-paper{background:#fff;color:#15151c;border-radius:14px;padding:24px 15px 30px;box-shadow:0 4px 22px #0005;font-family:system-ui,-apple-system,sans-serif;overflow-x:auto;font-size:12px;line-height:1.45}
+.report-head{border-bottom:3px solid #cb172f;padding-bottom:12px;margin-bottom:18px}
+.report-head h1{color:#b20f27;font-size:25px;font-weight:900;letter-spacing:1px;margin:0}
+.report-head p{font-size:10px;color:#50505a;margin:5px 0}
+.report-paper h2{font-size:15px;color:#96182b;border-bottom:1px solid #d9d9dd;padding:0 0 5px;margin:21px 0 9px}
+.report-kpis{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.report-kpis>div{border:1px solid #e0e0e3;border-radius:8px;padding:10px;display:flex;flex-direction:column;gap:5px;min-width:0}
+.report-kpis span{font-size:10px;color:#64646c}
+.report-kpis strong{font-size:17px;color:#24242b;overflow-wrap:anywhere}
+.report-paper table{width:100%;border-collapse:collapse;font-size:10px}
+.report-paper table th{text-align:left;background:#f4f1f3;color:#33333c;padding:8px 5px;border-bottom:1px solid #bebec4}
+.report-paper table td{padding:7px 5px;border-bottom:1px solid #e6e6e9;vertical-align:top;overflow-wrap:anywhere}
+.report-paper table th:last-child,.report-paper table td:last-child{text-align:right}
+.report-paper td.green{color:#04783b;font-weight:700}.report-paper td.red{color:#b3182e;font-weight:700}
+.report-paper footer{border-top:1px solid #ddd;font-size:9px;margin-top:23px;padding-top:10px;color:#666}
+.mobile-share .panel h2{margin-bottom:7px}
+.mobile-share .file-preview{max-height:60vh;object-fit:contain}
+.mobile-share .spinner{margin:10px auto}
+@media(min-width:700px){.report-paper{padding:32px}.report-kpis{grid-template-columns:repeat(5,minmax(0,1fr))}.mobile-share{max-width:720px;margin:auto}.mobile-tools-actions{max-width:580px}}
+@media print{
+ @page{size:A4 portrait;margin:12mm}
+ html,body,.app{background:white!important;color:black!important;min-height:0!important;height:auto!important;max-width:100%!important;overflow:visible!important}
+ .topbar,.bottomnav,#toast,.mobile-report-controls,.mobile-share,.mobile-tools-actions,.mobile-report-entry,.mobile-feed-share{display:none!important}
+ main,#screen{padding:0!important;margin:0!important;max-width:none!important;overflow:visible!important}
+ .report-paper{background:white!important;color:black!important;border:0!important;box-shadow:none!important;border-radius:0!important;padding:0!important;margin:0!important;overflow:visible!important;font-size:10pt!important}
+ .report-head h1{font-size:24pt!important}
+ .report-paper table{font-size:8pt!important;page-break-inside:auto}
+ .report-paper tr{break-inside:avoid;page-break-inside:avoid}
+ .report-paper thead{display:table-header-group}
+ .report-paper h2{break-after:avoid;page-break-after:avoid}
+ .report-kpis>div{break-inside:avoid;page-break-inside:avoid}
+ .report-kpis{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+ .report-paper *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
