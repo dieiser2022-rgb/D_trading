@@ -44,3 +44,10 @@
 .cal-rest{border-color:#65512d}
 .cal-no-trades{color:#aaa5b2;font-size:12px;padding:10px}
 @media(max-width:390px){.cal-grid{gap:3px}.cal-day{min-height:59px;padding:7px 0 3px}.cal-day .cal-amount{font-size:9px}.cal-day .cal-count{font-size:7px}.cal-stats strong{font-size:13px}}
+
+/* Cinco atalhos na barra inferior do iPhone */
+.bottomnav{padding-left:4px;padding-right:4px}
+.bottomnav button{font-size:9px;min-width:0;gap:3px;padding:5px 0;white-space:nowrap}
+.bottomnav .navico{font-size:20px}
+.bottomnav button.active .navico{min-width:33px;min-height:32px}
+@media(min-width:430px){.bottomnav button{font-size:11px}}
