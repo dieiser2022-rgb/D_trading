@@ -2,6 +2,7 @@
 'use strict';
 const tabs=['Análise','Básico','Resultado','Psicologia','Planejamento','Contexto','Revisão'];
 let draft=null, tab='Análise', section='', attachments=[], saving=false;
+let editRecordId=null, editRevision=0, editCreated='';
 const A=(s)=>esc(s??'');
 const text=(k)=>String(draft?.[k]??'');
 const dt=()=>({date:isoDate(),start:localTime(),end:'',asset:'',market:'Futuros',direction:'Compra',strategy:'',accountSyncId:'',entry:'',exit:'',stop:'',risk:'',pnl:'',fees:'0',analysis:'',psychology:'',planning:'',notes:'',review:'',good:'',improve:'',mistakes:'',lessons:'',timeframe:'',trend:'',followed:'',impulsive:'',revenge:'',confidence:'',discipline:'',target1:'',target2:'',target3:'',tag:'',favorite:false,noTrade:false,rating:3,images:[]});
@@ -20,7 +21,7 @@ function checkbox(key,label,desc=''){
  return `<label class="mob-switch-row"><input data-mobile-field="${key}" type="checkbox" ${draft[key]?'checked':''}><span><b>${A(label)}</b>${desc?`<small>${A(desc)}</small>`:''}</span></label>`;
 }
 function imageField(){
- return `<div class="field"><label for="mob_image">Prints do gráfico</label><input id="mob_image" data-mobile-upload type="file" multiple accept="image/*,.heic,.heif"><small class="muted tiny">Adicione um ou vários prints. As imagens são enviadas quando você salvar com internet. No computador, também é possível usar Ctrl+V.</small><div class="mob-files">${attachments.map((file,i)=>`<div class="mob-file"><span>▣ ${A(file.name||'Imagem '+(i+1))}</span><button type="button" data-mobile-action="removeFile" data-index="${i}" aria-label="Remover print">✕</button></div>`).join('')}</div></div>`;
+ return `<div class="field"><label for="mob_image">Prints do gráfico</label><input id="mob_image" data-mobile-upload type="file" multiple accept="image/*,.heic,.heif"><small class="muted tiny">Adicione um ou vários prints. As imagens são enviadas quando você salvar com internet. No computador, também é possível usar Ctrl+V.</small><div class="mob-files">${(draft.images||[]).map((ref,i)=>`<div class="mob-file"><span>▣ Print existente ${i+1}</span><button type="button" data-mobile-action="removeExistingFile" data-index="${i}" aria-label="Remover print existente">✕</button></div>`).join('')}${attachments.map((file,i)=>`<div class="mob-file"><span>▣ ${A(file.name||'Imagem '+(i+1))}</span><button type="button" data-mobile-action="removeFile" data-index="${i}" aria-label="Remover print">✕</button></div>`).join('')}</div></div>`;
 }
 function computed(){
  const f=(v)=>Number(String(v??'').trim().replace(',','.'));
@@ -51,7 +52,7 @@ function newView(){
  ensure();
  if(section==='account')return accountForm();
  if(section==='strategy')return strategyForm();
- return `<section class="mob-operation"><h1>Análise / Operação</h1><p class="hint">Cadastre sua operação com os mesmos campos do D_Trading Windows.</p><form id="trade-form" novalidate>${checkbox('noTrade','Hoje não operei','Registre a decisão do dia sem alterar suas estatísticas financeiras.')}${draft.noTrade?`<div class="panel">${field('Data','date','date')}${area('Por que não operei?','notes','Decisões, motivos e aprendizados do dia...')}</div>`:`<div class="mob-tabs" role="tablist" aria-label="Etapas do cadastro">${tabs.map(t=>`<button type="button" role="tab" aria-selected="${tab===t}" data-mobile-action="tab" data-tab="${A(t)}" class="${tab===t?'active':''}">${A(t)}</button>`).join('')}</div><div class="panel mob-form-panel">${content()}</div>`}<div id="mobile-trade-feedback" role="alert" aria-live="polite"></div><div class="mob-submitbar"><button type="button" class="button secondary" data-mobile-action="discard">Cancelar</button><button class="button" type="submit" ${saving?'disabled':''}>${saving?'Salvando...':draft.noTrade?'Registrar dia sem operação':'Registrar Operação'}</button></div></form><p class="mob-helper">Os dados são salvos neste iPhone e enviados ao Supabase. Sem internet, a operação sem print fica pendente; não apague o aplicativo antes da sincronização.</p></section>`;
+ return `<section class="mob-operation"><h1>${editRecordId?'Editar Operação':'Análise / Operação'}</h1><p class="hint">${editRecordId?'Altere os campos e salve para sincronizar no computador.':'Cadastre sua operação com os mesmos campos do D_Trading Windows.'}</p><form id="trade-form" novalidate>${checkbox('noTrade','Hoje não operei','Registre a decisão do dia sem alterar suas estatísticas financeiras.')}${draft.noTrade?`<div class="panel">${field('Data','date','date')}${area('Por que não operei?','notes','Decisões, motivos e aprendizados do dia...')}</div>`:`<div class="mob-tabs" role="tablist" aria-label="Etapas do cadastro">${tabs.map(t=>`<button type="button" role="tab" aria-selected="${tab===t}" data-mobile-action="tab" data-tab="${A(t)}" class="${tab===t?'active':''}">${A(t)}</button>`).join('')}</div><div class="panel mob-form-panel">${content()}</div>`}<div id="mobile-trade-feedback" role="alert" aria-live="polite"></div><div class="mob-submitbar"><button type="button" class="button secondary" data-mobile-action="discard">Cancelar</button><button class="button" type="submit" ${saving?'disabled':''}>${saving?'Salvando...':editRecordId?'Salvar alterações':draft.noTrade?'Registrar dia sem operação':'Registrar Operação'}</button></div></form><p class="mob-helper">Os dados são salvos neste iPhone e enviados ao Supabase. Sem internet, a operação sem print fica pendente; não apague o aplicativo antes da sincronização.</p></section>`;
 }
 function accountForm(){
  return `<section class="mob-operation"><button class="button secondary" type="button" data-mobile-action="back">← Voltar à operação</button><h1 style="margin-top:15px">Nova Conta</h1><p class="hint">A conta ficará disponível no iPhone e no computador após sincronizar.</p><form id="mobile-account-form" class="panel"><div class="field"><label>Nome da conta</label><input name="name" required maxlength="90" placeholder="Ex.: Pessoal — Escritório"></div><div class="mob-two"><div class="field"><label>Tipo de conta</label><select name="kind"><option>Pessoal</option><option>Mesa Proprietária</option><option>Real</option><option>Demo</option><option>Outros</option></select></div><div class="field"><label>Moeda</label><select name="currency"><option>USD</option><option>BRL</option><option>EUR</option></select></div></div><div class="field"><label>Capital inicial *</label><input required name="initial_capital" type="text" inputmode="decimal" placeholder="Ex.: 1000.00"></div><button class="button" type="submit" style="width:100%">Salvar conta</button></form></section>`;
@@ -74,7 +75,21 @@ async function queue(kind,data,id=crypto.randomUUID()){
  await saveCache();
  return id;
 }
-function resetForm(){draft=null;tab='Análise';section='';attachments=[];saving=false;}
+function resetForm(){draft=null;tab='Análise';section='';attachments=[];saving=false;editRecordId=null;editRevision=0;editCreated='';}
+function beginEdit(id){
+ if(S.busy){toast('Sincronização em andamento. Tente novamente.');return;}
+ const record=recordsAll().find(r=>r.kind==='trade'&&r.record_id===id);
+ if(!record||!record.data?.payload){toast('Operação não encontrada para edição.');return;}
+ draft={...dt(),...structuredClone(record.data.payload)};
+ draft.accountSyncId=draft.accountSyncId||'';
+ draft.images=Array.isArray(draft.images)?[...draft.images]:[];
+ editRecordId=id;
+ editRevision=Number(record.revision||0);
+ editCreated=record.data.created||new Date().toISOString();
+ tab='Análise';section='';attachments=[];saving=false;
+ S.view='new';S.selected=id;render();window.scrollTo(0,0);
+}
+window.DTradingMobileForm={beginEdit,reset:resetForm};
 async function saveAccount(e){
  e.preventDefault();if(saving)return;
  const f=new FormData(e.target),name=String(f.get('name')||'').trim(),capital=normalizeNum(f.get('initial_capital'),'o capital inicial',true);
@@ -99,8 +114,8 @@ async function saveOperation(e){
   if(!String(draft.asset||'').trim()){tab='Básico';render();throw Error('Informe o ativo na aba Básico');}
   if(!accounts().some(ac=>ac.id===draft.accountSyncId)){tab='Básico';render();throw Error('Selecione uma conta ou crie uma nova');}
  }
- const payload={...draft,images:[]};
- if(draft.noTrade){payload.accountSyncId=null;payload.asset='';payload.pnl='0';payload.fees='0';}
+ const payload={...draft,images:[...(draft.images||[])]};
+ if(draft.noTrade){payload.accountSyncId=null;payload.asset='';payload.pnl='0';payload.fees='0';payload.images=[];}
  else {
   for(const [key,label] of [['entry','Preço de Entrada'],['exit','Preço de Saída'],['stop','Preço do Stop'],['risk','Risco'],['pnl','Resultado Bruto'],['fees','Taxas'],['target1','Alvo 1'],['target2','Alvo 2'],['target3','Alvo 3']]){
    payload[key]=normalizeNum(payload[key],label,false);
@@ -113,8 +128,11 @@ async function saveOperation(e){
  const btn=e.target.querySelector('button[type=submit]');if(btn){btn.disabled=true;btn.textContent='Salvando...';}
  if(attachments.length&&!navigator.onLine)throw Error('Para salvar com prints, conecte à internet ou remova os prints. Seus dados continuam preenchidos.');
  for(const f of attachments)payload.images.push(await uploadImage(f));
- await queue('trade',{payload,created:new Date().toISOString(),updated:new Date().toISOString()});
- resetForm();S.view='feed';render();toast(navigator.onLine?'Operação salva. Enviando à nuvem...':'Operação salva offline, pendente de sincronização.');
+ const now=new Date().toISOString();
+ if(editRecordId)await queueRecordChange('trade',editRecordId,{payload,created:editCreated,updated:now},false,editRevision);
+ else await queue('trade',{payload,created:now,updated:now});
+ const wasEditing=!!editRecordId;
+ resetForm();S.view='feed';render();toast(wasEditing?'Alterações salvas no iPhone; sincronize com a nuvem.':navigator.onLine?'Operação salva. Enviando à nuvem...':'Operação salva offline, pendente de sincronização.');
  if(navigator.onLine)await sync();
  }catch(err){alertForm(err.message||'Erro ao salvar');}finally{saving=false;const b=document.querySelector('#trade-form button[type=submit]');if(b){b.disabled=false;b.textContent=draft?.noTrade?'Registrar dia sem operação':'Registrar Operação';}}
 }
@@ -138,6 +156,7 @@ document.addEventListener('click',e=>{
  else if(act==='back'){section='';render();}
  else if(act==='rate'){draft.rating=Number(el.dataset.rating);render();}
  else if(act==='removeFile'){attachments.splice(Number(el.dataset.index),1);render();}
+ else if(act==='removeExistingFile'){draft.images.splice(Number(el.dataset.index),1);render();}
  else if(act==='discard'){if((Object.keys(draft||{}).some(k=>draft[k]!==dt()[k]&&k!=='start')||attachments.length)&&!confirm('Descartar os dados desta operação?'))return;resetForm();S.view='feed';render();}
 });
 document.addEventListener('submit',e=>{
