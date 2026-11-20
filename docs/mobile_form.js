@@ -116,7 +116,7 @@ async function saveOperation(e){
  await queue('trade',{payload,created:new Date().toISOString(),updated:new Date().toISOString()});
  resetForm();S.view='feed';render();toast(navigator.onLine?'Operação salva. Enviando à nuvem...':'Operação salva offline, pendente de sincronização.');
  if(navigator.onLine)await sync();
- }catch(err){alertForm(err.message||'Erro ao salvar');}finally{saving=false;const b=$('trade-form button[type=submit]');if(b){b.disabled=false;b.textContent=draft?.noTrade?'Registrar dia sem operação':'Registrar Operação';}}
+ }catch(err){alertForm(err.message||'Erro ao salvar');}finally{saving=false;const b=document.querySelector('#trade-form button[type=submit]');if(b){b.disabled=false;b.textContent=draft?.noTrade?'Registrar dia sem operação':'Registrar Operação';}}
 }
 newTrade=function enhancedNewTrade(){return newView();};
 saveTrade=function enhancedSaveTrade(e){return saveOperation(e);};
