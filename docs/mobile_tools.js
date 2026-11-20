@@ -46,17 +46,45 @@ function aggregate(t){const m=metrics(t),w=t.filter(x=>net(x)>0),l=t.filter(x=>n
  return {...m,dd,grossWins:w.reduce((s,x)=>s+net(x),0),grossLoss:Math.abs(l.reduce((s,x)=>s+net(x),0)),averageRR:rr.length?rr.reduce((s,x)=>s+x,0)/rr.length:null,expectancy:t.length?m.net/t.length:0};
 }
 function reportView(){
- const t=reportTrades(),m=aggregate(t);
+ const records=reportTrades(),fin=records.filter(x=>hasRecorded(x.pnl)),m=aggregate(fin);
  const assetTotals=new Map(),strategyTotals=new Map(),dayTotals=new Map();
- for(const x of t){
-  for(const [map,key] of [[assetTotals,x.asset||'Outro'],[strategyTotals,x.strategy||'Sem estratégia'],[dayTotals,x.date]]){
-   const old=map.get(key)||{amount:0,count:0};old.amount+=net(x);old.count++;map.set(key,old);
-  }
+ for(const trade of fin){
+  const add=(map,key)=>{
+   if(!hasRecorded(key))return;
+   const cur=map.get(key)||{amount:0,count:0};
+   cur.amount+=net(trade);cur.count++;
+   map.set(key,cur);
+  };
+  add(assetTotals,trade.asset);add(strategyTotals,trade.strategy);add(dayTotals,trade.date);
  }
  const fmt=v=>esc(money(v));
- const bar=(map)=>[...map].sort((a,b)=>b[1].amount-a[1].amount).map(([name,v])=>`<tr><td>${esc(name)}</td><td>${v.count}</td><td class="${sign(v.amount)}">${fmt(v.amount)}</td></tr>`).join('');
- const accountsOpt=accounts().map(a=>`<option value="${esc(a.id)}" ${reportAccount===a.id?'selected':''}>${esc(a.name)}</option>`).join('');
- return `<div class="mobile-report-controls"><button class="button secondary" data-tool-action="reportBack">← Voltar</button><h1>Relatório de Performance</h1><p class="hint">Escolha o período e a conta que deseja analisar.</p><div class="mob-two"><div class="field"><label for="rFrom">Data inicial</label><input id="rFrom" data-tool-input="from" type="date" value="${esc(reportFrom)}"></div><div class="field"><label for="rTo">Data final</label><input id="rTo" data-tool-input="to" type="date" value="${esc(reportTo)}"></div></div><div class="field"><label>Conta</label><select data-tool-input="account"><option value="all">Todas as contas</option>${accountsOpt}</select></div><div class="mobile-report-presets"><button data-tool-action="preset" data-period="7">7 dias</button><button data-tool-action="preset" data-period="30">30 dias</button><button data-tool-action="preset" data-period="month">Este mês</button><button data-tool-action="preset" data-period="all">Todo histórico</button></div><div class="mobile-report-buttons"><button class="button" data-tool-action="printReport">▤ Salvar PDF / Imprimir</button><button class="button secondary" data-tool-action="csvReport">Exportar CSV</button></div><p class="mob-helper">No iPhone, escolha “Salvar em Arquivos” a partir da visualização de impressão para guardar o PDF. Os valores não são convertidos entre moedas diferentes.</p></div><article class="report-paper" id="report-paper"><header class="report-head"><h1>D_TRADING</h1><p>RELATÓRIO DE PERFORMANCE • GERADO EM ${esc(new Date().toLocaleString('pt-BR'))}</p><p>Período: ${esc(reportFrom||'Início')} a ${esc(reportTo||'Hoje')} • ${reportAccount==='all'?'Todas as contas':esc(accounts().find(a=>a.id===reportAccount)?.name||'Conta')}</p><p>Última sincronização conhecida: ${S.lastSync?esc(new Date(S.lastSync).toLocaleString('pt-BR')):'Não confirmada'} • ${navigator.onLine?'Conectado':'Offline'}</p></header><section class="report-kpis"><div><span>Resultado líquido</span><strong>${fmt(m.net)}</strong></div><div><span>Operações</span><strong>${m.count}</strong></div><div><span>Win Rate</span><strong>${pct(m.rate)}</strong></div><div><span>Profit Factor</span><strong>${m.pf===Infinity?'∞':m.pf.toFixed(2)}</strong></div><div><span>Vitórias / Derrotas</span><strong>${m.wins} / ${m.losses}</strong></div><div><span>Expectativa / Trade</span><strong>${fmt(m.expectancy)}</strong></div><div><span>Drawdown Máximo</span><strong>${fmt(m.dd)}</strong></div><div><span>R/R Médio</span><strong>${m.averageRR===null?'—':m.averageRR.toFixed(2)+' R'}</strong></div><div><span>Lucro Bruto</span><strong>${fmt(m.grossWins)}</strong></div><div><span>Perdas Brutas</span><strong>${fmt(-m.grossLoss)}</strong></div></section><h2>Resultado por Ativo</h2><table><thead><tr><th>Ativo</th><th>Trades</th><th>Resultado</th></tr></thead><tbody>${bar(assetTotals)||'<tr><td colspan="3">Sem operações no período</td></tr>'}</tbody></table><h2>Resultado por Estratégia</h2><table><thead><tr><th>Estratégia</th><th>Trades</th><th>Resultado</th></tr></thead><tbody>${bar(strategyTotals)||'<tr><td colspan="3">Sem dados</td></tr>'}</tbody></table><h2>Resultado Diário</h2><table><thead><tr><th>Data</th><th>Trades</th><th>Resultado</th></tr></thead><tbody>${bar(dayTotals)||'<tr><td colspan="3">Sem dados</td></tr>'}</tbody></table><h2>Operações do Período</h2><table><thead><tr><th>Data / Hora</th><th>Ativo</th><th>Direção</th><th>Estratégia</th><th>P&L líquido</th></tr></thead><tbody>${t.map(x=>`<tr><td>${esc(formatDate(x.date))} ${esc(x.start||'')}</td><td>${esc(x.asset)}</td><td>${esc(x.direction||'—')}</td><td>${esc(x.strategy||'—')}</td><td class="${sign(net(x))}">${fmt(net(x))}</td></tr>`).join('')||'<tr><td colspan="5">Nenhum trade neste período</td></tr>'}</tbody></table><footer>Relatório gerado no D_Trading Mobile. O resultado representa registros informados, não extratos oficiais da corretora.</footer></article>`;
+ const accountOptions=accounts().map(a=>`<option value="${esc(a.id)}" ${reportAccount===a.id?'selected':''}>${esc(a.name)}</option>`).join('');
+ const kpis=[];
+ const kpi=(label,value)=>{if(hasRecorded(value))kpis.push(`<div><span>${esc(label)}</span><strong>${esc(value)}</strong></div>`)};
+ kpi('Operações registradas',records.length);
+ if(fin.length){
+  kpi('Operações com resultado',fin.length);
+  kpi('Resultado líquido',money(m.net));
+  kpi('Win Rate',pct(m.rate));
+  if(m.grossLoss>0)kpi('Profit Factor',m.pf.toFixed(2));
+  kpi('Vitórias / Derrotas',`${m.wins} / ${m.losses}`);
+  kpi('Expectativa / Trade',money(m.expectancy));
+  kpi('Drawdown Máximo',money(m.dd));
+  if(m.averageRR!==null)kpi('R/R Médio',m.averageRR.toFixed(2)+' R');
+  if(m.wins>0)kpi('Lucro Bruto',money(m.grossWins));
+  if(m.losses>0)kpi('Perdas Brutas',money(-m.grossLoss));
+ }
+ const summaryTable=(label,map,firstHeading)=>{
+  if(!map.size)return '';
+  const rows=[...map.entries()].sort((a,b)=>b[1].amount-a[1].amount).map(([key,v])=>`<tr><td>${esc(key)}</td><td>${v.count}</td><td class="${sign(v.amount)}">${fmt(v.amount)}</td></tr>`).join('');
+  return `<h2>${esc(label)}</h2><table><thead><tr><th>${esc(firstHeading)}</th><th>Trades</th><th>Resultado</th></tr></thead><tbody>${rows}</tbody></table>`;
+ };
+ const operations=records.map((trade,i)=>{
+  const groups=cardSections(trade);
+  const presentGroups=groups.map(group=>`<section class="report-op-section"><h4>${esc(group.section)}</h4><dl>${group.entries.map(([label,value])=>`<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join('')}</dl></section>`).join('');
+  return `<article class="report-operation"><h3>Operação ${i+1}${hasRecorded(trade.asset)?' · '+esc(trade.asset):''}</h3>${presentGroups}</article>`;
+ }).join('');
+ return `<div class="mobile-report-controls"><button class="button secondary" data-tool-action="reportBack">← Voltar</button><h1>Relatório de Performance</h1><p class="hint">Escolha o período e a conta que deseja analisar.</p><div class="mob-two"><div class="field"><label for="rFrom">Data inicial</label><input id="rFrom" data-tool-input="from" type="date" value="${esc(reportFrom)}"></div><div class="field"><label for="rTo">Data final</label><input id="rTo" data-tool-input="to" type="date" value="${esc(reportTo)}"></div></div><div class="field"><label>Conta</label><select data-tool-input="account"><option value="all">Todas as contas</option>${accountOptions}</select></div><div class="mobile-report-presets"><button data-tool-action="preset" data-period="7">7 dias</button><button data-tool-action="preset" data-period="30">30 dias</button><button data-tool-action="preset" data-period="month">Este mês</button><button data-tool-action="preset" data-period="all">Todo histórico</button></div><div class="mobile-report-buttons"><button class="button" data-tool-action="printReport">▤ Salvar PDF / Imprimir</button><button class="button secondary" data-tool-action="csvReport">Exportar CSV</button></div><p class="mob-helper">O relatório inclui somente dados preenchidos. No iPhone, use a prévia de impressão para salvar como PDF. Valores de moedas diferentes não são convertidos.</p></div><article class="report-paper" id="report-paper"><header class="report-head"><h1>D_TRADING</h1><p>RELATÓRIO DE PERFORMANCE • GERADO EM ${esc(new Date().toLocaleString('pt-BR'))}</p><p>Período: ${esc(reportFrom||'Início')} a ${esc(reportTo||'Hoje')} • ${reportAccount==='all'?'Todas as contas':esc(accounts().find(a=>a.id===reportAccount)?.name||'Conta')}</p>${S.lastSync?`<p>Última sincronização: ${esc(new Date(S.lastSync).toLocaleString('pt-BR'))}</p>`:''}</header>${records.length?`<section class="report-kpis">${kpis.join('')}</section>${fin.length<records.length?`<p class="report-note">Indicadores financeiros calculados apenas sobre ${fin.length} operação(ões) com resultado preenchido.</p>`:''}${summaryTable('Resultado por Ativo',assetTotals,'Ativo')}${summaryTable('Resultado por Estratégia',strategyTotals,'Estratégia')}${summaryTable('Resultado Diário',dayTotals,'Data')}<h2>Operações do Período</h2>${operations}`:'<p>Nenhuma operação registrada no período selecionado.</p>'}<footer>Relatório gerado no D_Trading Mobile com os dados informados. Não substitui o extrato oficial da corretora.</footer></article>`;
 }
 function clearShare(){
  for(const url of shareLinks)URL.revokeObjectURL(url);
