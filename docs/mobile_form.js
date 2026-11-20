@@ -80,7 +80,7 @@ function beginEdit(id){
  if(S.busy){toast('Sincronização em andamento. Tente novamente.');return;}
  const record=recordsAll().find(r=>r.kind==='trade'&&r.record_id===id);
  if(!record||!record.data?.payload){toast('Operação não encontrada para edição.');return;}
- draft={...dt(),...structuredClone(record.data.payload)};
+ draft={...dt(),...JSON.parse(JSON.stringify(record.data.payload))};
  draft.accountSyncId=draft.accountSyncId||'';
  draft.images=Array.isArray(draft.images)?[...draft.images]:[];
  editRecordId=id;
