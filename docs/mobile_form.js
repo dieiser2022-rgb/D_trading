@@ -138,6 +138,12 @@ async function saveOperation(e){
 }
 newTrade=function enhancedNewTrade(){return newView();};
 saveTrade=function enhancedSaveTrade(e){return saveOperation(e);};
+document.addEventListener('click',e=>{
+ const nav=e.target.closest('[data-view]');
+ if(nav?.dataset.view!=='new')return;
+ if(editRecordId&&(!confirm('Sair da edição e abrir um cadastro novo? As alterações não salvas serão descartadas.'))){e.preventDefault();e.stopImmediatePropagation();return;}
+ resetForm();
+},true);
 document.addEventListener('input',currentField);
 document.addEventListener('change',e=>{
  if(e.target.matches('[data-mobile-upload]')){addFiles(e.target.files);return;}
