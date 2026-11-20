@@ -10,26 +10,10 @@ const accountName=t=>accounts().find(a=>a.id===t.accountSyncId)?.name||'—';
 const pt=v=>String(v??'—');
 const labelLine=(l,v)=>`${l}: ${v===undefined||v===null||String(v).trim()===''?'—':String(v)}`;
 const duration=t=>{if(!t.start||!t.end)return '—';const a=t.start.split(':').map(Number),b=t.end.split(':').map(Number);let n=b[0]*60+b[1]-a[0]*60-a[1];if(n<0)n+=1440;return n>=60?`${Math.floor(n/60)}h ${n%60}min`:`${n} min`};
+const hasRecorded=(v)=>v!==null&&v!==undefined&&(typeof v!=='string'||(v.trim()!==''&&v.trim()!=='—'&&v.trim()!=='-'&&v.trim().toLowerCase()!=='null'))&&!(typeof v==='number'&&!Number.isFinite(v));
 function tradeText(t){
- const acc=accounts().find(a=>a.id===t.accountSyncId);
- const r=Number(t.risk),p=net(t);
- const rr=Number.isFinite(r)&&r>0?(p/r).toFixed(2)+' R':t.rr?pt(t.rr)+' R':'—';
- const entry=asNum(t.entry),exit=asNum(t.exit);
- const points= t.entry!=='' && t.entry!=null && t.exit!=='' && t.exit!=null && Number.isFinite(Number(t.entry)) && Number.isFinite(Number(t.exit)) ? (exit-entry)*(t.direction==='Venda'?-1:1):null;
- const pct=Number(acc?.initial_capital)>0?(p/Number(acc.initial_capital)*100).toFixed(2)+'%':'—';
- const rows=[
- ['Data',formatDate(t.date)],['Ativo',t.asset],['Mercado',t.market],['Direção',t.direction],['Conta',acc?.name],['Tipo de Conta',acc?.kind],
- ['Estratégia',t.strategy],['Horário de entrada',t.start],['Horário de saída',t.end],['Duração',duration(t)],['Timeframe',t.timeframe],['Tendência do Mercado',t.trend],
- ['Preço de Entrada',t.entry],['Preço de Saída',t.exit],['Preço do Stop',t.stop],['Alvo 1',t.target1],['Alvo 2',t.target2],['Alvo 3',t.target3],
- ['Resultado em Pontos',points],['Resultado Financeiro Bruto',money(asNum(t.pnl))],['Custos / Taxas',money(asNum(t.fees))],['Resultado Líquido',money(p)],
- ['Resultado sobre Capital Inicial',pct],['Risco Financeiro',t.risk],['R/R Realizado',rr],
- ['Seguiu o Plano',t.followed],['Operou por Impulso',t.impulsive],['Fez Revenge Trade',t.revenge],['Confiança',t.confidence===''?'—':t.confidence+'/10'],
- ['Disciplina',t.discipline===''?'—':t.discipline+'/10'],['Emoções e Comportamento',t.psychology],
- ['Texto da Análise',t.analysis],['Gerenciamento / Planejamento',t.planning],['Contexto',t.notes],['Revisão Pós-operação',t.review],
- ['O Que Fez Bem',t.good],['O Que Precisa Melhorar',t.improve],['Erros Cometidos',t.mistakes],['Aprendizados',t.lessons],
- ['Nota Geral',t.rating?`${t.rating}/5`:'—'],['Tags',t.tag],['Favorito',t.favorite?'Sim':'Não']
- ];
- return `D_TRADING | RELATÓRIO DA OPERAÇÃO\n\n`+rows.map(([k,v])=>labelLine(k,v)).join('\n\n');
+ const groups=cardSections(t);
+ return ['D_TRADING | RELATÓRIO DA OPERAÇÃO',...groups.map(group=>group.section+'\n'+group.entries.map(([label,value])=>`${label}: ${value}`).join('\n'))].join('\n\n');
 }
 function actionBar(t){
  const id=esc(t.id);
@@ -113,17 +97,39 @@ const wrap=(ctx,text,width)=>{
 };
 function cardSections(t){
  const acc=accounts().find(a=>a.id===t.accountSyncId);
- const rr=Number(t.risk)>0?(net(t)/Number(t.risk)).toFixed(2)+' R':t.rr?String(t.rr)+' R':'—';
- const pts=t.entry!==''&&t.entry!=null&&t.exit!==''&&t.exit!=null&&Number.isFinite(Number(t.entry))&&Number.isFinite(Number(t.exit))?(Number(t.exit)-Number(t.entry))*(t.direction==='Venda'?-1:1):null;
+ const netValid=hasRecorded(t.pnl);
+ const feeValid=hasRecorded(t.fees);
+ const risk=Number(t.risk);
+ const riskValid=hasRecorded(t.risk)&&Number.isFinite(risk)&&risk>0;
+ const rr=riskValid&&netValid?(net(t)/risk).toFixed(2)+' R':hasRecorded(t.rr)?String(t.rr)+' R':null;
+ const pricesValid=hasRecorded(t.entry)&&hasRecorded(t.exit)&&Number.isFinite(Number(t.entry))&&Number.isFinite(Number(t.exit));
+ const points=pricesValid?(Number(t.exit)-Number(t.entry))*(t.direction==='Venda'?-1:1):null;
  const capital=Number(acc?.initial_capital);
- const percent=capital>0?(net(t)/capital*100).toFixed(2)+'%':'—';
- const n=(v)=>v===undefined||v===null||String(v).trim()===''?'—':String(v);
- return [
- ['DATA E IDENTIFICAÇÃO',[['Ativo',t.asset],['Data',formatDate(t.date)],['Entrada',t.start],['Saída',t.end],['Duração',duration(t)],['Conta',acc?.name],['Tipo de Conta',acc?.kind],['Mercado',t.market],['Direção',t.direction],['Estratégia',t.strategy],['Timeframe',t.timeframe],['Tendência',t.trend]]],
- ['GESTÃO E RESULTADOS',[['Preço de Entrada',t.entry],['Preço de Saída',t.exit],['Preço do Stop',t.stop],['Alvo 1',t.target1],['Alvo 2',t.target2],['Alvo 3',t.target3],['Resultado Bruto',money(asNum(t.pnl))],['Taxas',money(asNum(t.fees))],['Resultado Líquido',money(net(t))],['Resultado em Pontos',pts],['Capital Inicial',capital>0?capital:'—'],['% sobre Capital Inicial',percent],['Risco Financeiro',t.risk],['R/R Realizado',rr]]],
- ['PSICOLOGIA',[['Seguiu Plano',t.followed],['Impulso',t.impulsive],['Revenge Trade',t.revenge],['Confiança',t.confidence],['Disciplina',t.discipline],['Emoções e Comportamento',t.psychology]]],
- ['ANÁLISE E REVISÃO',[['Análise',t.analysis],['Planejamento',t.planning],['Contexto',t.notes],['Revisão',t.review],['O Que Fez Bem',t.good],['O Que Precisa Melhorar',t.improve],['Erros',t.mistakes],['Aprendizados',t.lessons],['Nota Geral',t.rating?String(t.rating)+'/5':'—'],['Tags',t.tag],['Favorito',t.favorite?'Sim':'Não']]]
- ].map(([section,entries])=>({section,entries:entries.map(([key,val])=>[key,n(val)])}));
+ const pct=netValid&&Number.isFinite(capital)&&capital>0?(net(t)/capital*100).toFixed(2)+'%':null;
+ const shown=(name,v)=>[name,v];
+ const groups=[
+ ['DATA E IDENTIFICAÇÃO',[
+ shown('Ativo',t.asset),shown('Data',hasRecorded(t.date)?formatDate(t.date):null),shown('Entrada',t.start),shown('Saída',t.end),
+ shown('Duração',hasRecorded(t.start)&&hasRecorded(t.end)?duration(t):null),
+ shown('Conta',acc?.name),shown('Tipo de Conta',acc?.kind),shown('Mercado',t.market),shown('Direção',t.direction),
+ shown('Estratégia',t.strategy),shown('Timeframe',t.timeframe),shown('Tendência',t.trend)]],
+ ['GESTÃO E RESULTADOS',[
+ shown('Preço de Entrada',t.entry),shown('Preço de Saída',t.exit),shown('Preço do Stop',t.stop),
+ shown('Alvo 1',t.target1),shown('Alvo 2',t.target2),shown('Alvo 3',t.target3),
+ shown('Resultado Bruto',netValid?money(asNum(t.pnl)):null),shown('Taxas',feeValid?money(asNum(t.fees)):null),
+ shown('Resultado Líquido',netValid?money(net(t)):null),shown('Resultado em Pontos',points),
+ shown('Capital Inicial',hasRecorded(acc?.initial_capital)?acc.initial_capital:null),
+ shown('% sobre Capital Inicial',pct),shown('Risco Financeiro',t.risk),shown('R/R Realizado',rr)]],
+ ['PSICOLOGIA',[
+ shown('Seguiu Plano',t.followed),shown('Impulso',t.impulsive),shown('Revenge Trade',t.revenge),
+ shown('Confiança',t.confidence),shown('Disciplina',t.discipline),shown('Emoções e Comportamento',t.psychology)]],
+ ['ANÁLISE E REVISÃO',[
+ shown('Análise',t.analysis),shown('Planejamento',t.planning),shown('Contexto',t.notes),shown('Revisão',t.review),
+ shown('O Que Fez Bem',t.good),shown('O Que Precisa Melhorar',t.improve),shown('Erros',t.mistakes),
+ shown('Aprendizados',t.lessons),shown('Nota Geral',hasRecorded(t.rating)?String(t.rating)+'/5':null),
+ shown('Tags',t.tag),shown('Favorito',t.favorite===true?'Sim':null)]]
+ ];
+ return groups.map(([section,entries])=>({section,entries:entries.filter(([,v])=>hasRecorded(v))})).filter(group=>group.entries.length>0);
 }
 async function makeShareCards(t,img){
  const width=1080,margin=55,lineH=35,maxPage=6500;
