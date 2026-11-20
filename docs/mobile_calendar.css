@@ -1,0 +1,46 @@
+
+/* Calendário do iPhone — Trader Pro Vermelho */
+.mobile-calendar{padding-bottom:12px}
+.cal-heading h1{margin-bottom:5px}
+.cal-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:16px 0}
+.cal-stats>div{background:linear-gradient(145deg,#1a1a21,#121318);border:1px solid #34343d;border-radius:11px;padding:11px 7px;text-align:center;min-width:0}
+.cal-stats small{display:block;font-size:10px;color:#aaa6b1;margin-bottom:8px}
+.cal-stats strong{display:block;font-size:15px;color:#fff;overflow-wrap:anywhere}
+.cal-stats strong.green{color:#21e287}.cal-stats strong.red{color:#ff4a5f}
+.cal-container{padding:10px 7px 17px}
+.cal-header{display:flex;align-items:center;justify-content:space-between;margin:0 0 16px}
+.cal-header h2{font-size:16px;margin:0;text-align:center}
+.cal-header button{background:#241820;color:#fff;border:1px solid #683040;border-radius:9px;min-width:43px;min-height:43px;font-size:25px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.cal-week{margin-bottom:8px}
+.cal-week span{text-align:center;color:#aaa6b1;text-transform:uppercase;font-size:9px;font-weight:700}
+.cal-day{min-height:64px;display:flex;align-items:center;justify-content:flex-start;flex-direction:column;gap:3px;padding:8px 1px 4px;border-radius:9px;border:1px solid #303038;background:#181820;color:#d5d4dc;overflow:hidden;min-width:0}
+.cal-day .cal-num{font-size:12px;font-weight:750}
+.cal-day .cal-amount{font-size:10px;font-weight:800;white-space:nowrap;letter-spacing:-.4px}
+.cal-day .cal-count{font-size:8px;color:#bbb6c1;white-space:nowrap}
+.cal-day.win{background:#102e20;border-color:#1b6341;color:#2af19c}
+.cal-day.loss{background:#381922;border-color:#8c2639;color:#ff798a}
+.cal-day.flat{background:#222029;border-color:#5b4e65;color:#e3dee8}
+.cal-day.rest{background:#2b271a;border-color:#67552b;color:#f3c771}
+.cal-day.pending{background:#26212b;border-color:#5b4461;color:#f3d7fd}
+.cal-day.today{outline:1px solid #79748a;outline-offset:-2px}
+.cal-day.selected{outline:2px solid #ff3655;outline-offset:-2px;box-shadow:0 0 13px #bd183333}
+.cal-day:focus-visible{outline:3px solid #ff526a}
+.cal-outside{min-height:64px}
+.cal-details{margin-top:14px;padding:15px 12px}
+.cal-details-head{display:flex;justify-content:space-between;gap:10px;align-items:start;border-bottom:1px solid #3b343f;padding-bottom:10px;margin-bottom:10px}
+.cal-details-head h2{font-size:16px;margin:0 0 4px}
+.cal-details-head p{color:#b2aeb7;font-size:11px;margin:0}
+.cal-details-head button{min-width:35px;min-height:35px;border-radius:8px;border:1px solid #593744;background:#2b1c26;color:#fff}
+.cal-day-total{font-size:14px;font-weight:800;padding:9px 6px}
+.cal-day-total.green{color:#30ee99}.cal-day-total.red{color:#ff6c7f}
+.cal-trade{display:flex;align-items:center;gap:9px;width:100%;text-align:left;border:1px solid #39333e;border-radius:10px;background:#16151b;color:#fff;padding:12px 10px;margin:8px 0;min-height:58px}
+.cal-trade>div{display:flex;flex:1;flex-direction:column;gap:5px;min-width:0}
+.cal-trade strong{font-size:13px}
+.cal-trade small{font-size:10px;color:#aba5af;white-space:normal;overflow-wrap:anywhere}
+.cal-trade>span:not(.cal-chevron){font-size:13px;font-weight:800;white-space:nowrap}
+.cal-trade>span.green{color:#1be991}.cal-trade>span.red{color:#ff6478}
+.cal-chevron{font-size:20px;color:#b5a2ab}
+.cal-rest{border-color:#65512d}
+.cal-no-trades{color:#aaa5b2;font-size:12px;padding:10px}
+@media(max-width:390px){.cal-grid{gap:3px}.cal-day{min-height:59px;padding:7px 0 3px}.cal-day .cal-amount{font-size:9px}.cal-day .cal-count{font-size:7px}.cal-stats strong{font-size:13px}}
