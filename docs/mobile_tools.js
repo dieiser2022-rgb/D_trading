@@ -114,10 +114,13 @@ const wrap=(ctx,text,width)=>{
 function cardSections(t){
  const acc=accounts().find(a=>a.id===t.accountSyncId);
  const rr=Number(t.risk)>0?(net(t)/Number(t.risk)).toFixed(2)+' R':t.rr?String(t.rr)+' R':'—';
+ const pts=t.entry!==''&&t.entry!=null&&t.exit!==''&&t.exit!=null&&Number.isFinite(Number(t.entry))&&Number.isFinite(Number(t.exit))?(Number(t.exit)-Number(t.entry))*(t.direction==='Venda'?-1:1):null;
+ const capital=Number(acc?.initial_capital);
+ const percent=capital>0?(net(t)/capital*100).toFixed(2)+'%':'—';
  const n=(v)=>v===undefined||v===null||String(v).trim()===''?'—':String(v);
  return [
  ['DATA E IDENTIFICAÇÃO',[['Ativo',t.asset],['Data',formatDate(t.date)],['Entrada',t.start],['Saída',t.end],['Duração',duration(t)],['Conta',acc?.name],['Tipo de Conta',acc?.kind],['Mercado',t.market],['Direção',t.direction],['Estratégia',t.strategy],['Timeframe',t.timeframe],['Tendência',t.trend]]],
- ['GESTÃO E RESULTADOS',[['Preço de Entrada',t.entry],['Preço de Saída',t.exit],['Preço do Stop',t.stop],['Alvo 1',t.target1],['Alvo 2',t.target2],['Alvo 3',t.target3],['Resultado Bruto',money(asNum(t.pnl))],['Taxas',money(asNum(t.fees))],['Resultado Líquido',money(net(t))],['Risco Financeiro',t.risk],['R/R Realizado',rr]]],
+ ['GESTÃO E RESULTADOS',[['Preço de Entrada',t.entry],['Preço de Saída',t.exit],['Preço do Stop',t.stop],['Alvo 1',t.target1],['Alvo 2',t.target2],['Alvo 3',t.target3],['Resultado Bruto',money(asNum(t.pnl))],['Taxas',money(asNum(t.fees))],['Resultado Líquido',money(net(t))],['Resultado em Pontos',pts],['Capital Inicial',capital>0?capital:'—'],['% sobre Capital Inicial',percent],['Risco Financeiro',t.risk],['R/R Realizado',rr]]],
  ['PSICOLOGIA',[['Seguiu Plano',t.followed],['Impulso',t.impulsive],['Revenge Trade',t.revenge],['Confiança',t.confidence],['Disciplina',t.discipline],['Emoções e Comportamento',t.psychology]]],
  ['ANÁLISE E REVISÃO',[['Análise',t.analysis],['Planejamento',t.planning],['Contexto',t.notes],['Revisão',t.review],['O Que Fez Bem',t.good],['O Que Precisa Melhorar',t.improve],['Erros',t.mistakes],['Aprendizados',t.lessons],['Nota Geral',t.rating?String(t.rating)+'/5':'—'],['Tags',t.tag],['Favorito',t.favorite?'Sim':'Não']]]
  ].map(([section,entries])=>({section,entries:entries.map(([key,val])=>[key,n(val)])}));
@@ -209,7 +212,8 @@ function startShare(id){
 function shareNative(){
  if(!shareFiles.length)return toast('Prepare o compartilhamento primeiro.');
  const data={title:'Operação D_Trading',text:'Operação registrada no D_Trading',files:shareFiles};
- if(typeof navigator.share!=='function'||(typeof navigator.canShare==='function'&&!navigator.canShare({files:shareFiles}))){
+ let supportsFiles=typeof navigator.share==='function';try{if(supportsFiles&&typeof navigator.canShare==='function')supportsFiles=navigator.canShare({files:shareFiles})}catch{supportsFiles=false}
+ if(!supportsFiles){
   toast('Este navegador não permite anexar arquivos por Compartilhar. Salve a imagem e anexe manualmente no WhatsApp ou e-mail.');
   return;
  }
