@@ -49,3 +49,21 @@
  .report-kpis{grid-template-columns:repeat(5,minmax(0,1fr))!important}
  .report-paper *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
+
+
+/* Relatório com somente os campos efetivamente registrados. */
+.report-note{font-size:11px;color:#55525b;background:#f8f2f3;border-left:3px solid #bc253d;padding:9px 11px;margin:13px 0;line-height:1.5}
+.report-operation{border:1px solid #dcd7dc;border-radius:9px;padding:13px 14px;margin:12px 0 18px;break-inside:auto;page-break-inside:auto}
+.report-operation h3{font-size:14px;margin:0 0 12px;color:#ad1730;border-bottom:1px solid #e3dde2;padding:0 0 7px}
+.report-op-section{margin:13px 0 5px;break-inside:auto}
+.report-op-section h4{font-size:11px;letter-spacing:.2px;color:#5a4550;text-transform:uppercase;margin:0 0 6px;break-after:avoid}
+.report-op-section dl{margin:0}
+.report-op-section dl>div{display:flex;gap:12px;justify-content:space-between;padding:6px 0;border-bottom:1px solid #efeaed;break-inside:avoid}
+.report-op-section dt{font-size:11px;color:#67616a;max-width:43%;flex-shrink:0}
+.report-op-section dd{font-size:11px;color:#18151b;text-align:right;margin:0;overflow-wrap:anywhere;white-space:pre-wrap;max-width:57%}
+@media print{
+ .report-operation{border:1px solid #dcd7dc!important;break-inside:auto!important;page-break-inside:auto!important}
+ .report-op-section dl>div{break-inside:avoid!important;page-break-inside:avoid!important}
+ .report-op-section h4,.report-operation h3{break-after:avoid!important;page-break-after:avoid!important}
+ .report-operation dd{color:#111!important}
+}
